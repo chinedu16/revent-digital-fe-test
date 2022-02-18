@@ -31,5 +31,9 @@ jobs:
       - name: Install Surge
         run: yarn global add surge
 
+      - name: Fix 404 error for build
+        working-directory: ./dist
+        run: cp index.html 200.html
+
       - name: Push to the set url
         run: surge ./build https://revent_digital.surge.sh --token ${{secrets.SURGE_TOKEN}}
