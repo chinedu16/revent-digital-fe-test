@@ -1,0 +1,39 @@
+name: Build and revent digital test
+on:
+  push:
+    branches: [ main ]
+
+  pull_request:
+    branches: [ main ]
+  
+  workflow_dispatch:
+    
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        
+      - name: Configure node version
+        uses: actions/setup-node@v1
+        with: 
+          node-version: '16.13.0'
+        
+      - name: Install node dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Build app
+        run: CI='' yarn build
+        
+      - name: Install Surge
+        run: yarn global add surge
+
+      - name: Fix 404 error for build
+        working-directory: ./build
+        run: cp index.html 200.html
+
+      - name: Push to the set url
+        run: surge ./build https://revent_digital.surge.sh --token ${{secrets.SURGE_TOKEN}}
